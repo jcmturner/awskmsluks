@@ -11,8 +11,10 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/s3/s3manager"
 	"github.com/hashicorp/go-uuid"
 	"github.com/jcmturner/awsarn"
+	"io/ioutil"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -176,4 +178,50 @@ func (k *key) decrypt() error {
 	}
 	k.DataKey.Plain = base64.StdEncoding.EncodeToString(output.Plaintext)
 	return nil
+}
+
+func (k *key) Load(path string) error {
+	b, err := ioutil.ReadFile(path)
+	if err != nil {
+		return fmt.Errorf("error reading device's key from local store (%s): %v", path, err)
+	}
+	err = json.Unmarshal(b, k)
+	if err != nil {
+		return fmt.Errorf("error parsing device's key from local store (%s): %v", path, err)
+	}
+	return nil
+}
+
+func keys() ([]key, error) {
+	var ks []key
+	// Get host's FQDN
+	fqdn, err := os.Hostname()
+	if err != nil {
+		return ks, fmt.Errorf("could not get host's FQDN: " + err.Error())
+	}
+	sp := dirRoot + keyStore + fqdn + "/"
+	kl, err := ioutil.ReadDir(sp)
+	if err != nil {
+		return ks, fmt.Errorf("could not read local key store (%s): %v", sp, err)
+	}
+	for _, kp := range kl {
+		if kp.IsDir() {
+			continue
+		}
+		if !strings.HasSuffix(kp.Name(), ".json") {
+			continue
+		}
+		_, err := uuid.ParseUUID(strings.SplitN(kp.Name(), ".json", 2)[0])
+		if err != nil {
+			continue
+		}
+		var k key
+		err = k.Load(sp + kp.Name())
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "error loading key %s: %v", sp+kp.Name(), err)
+			continue
+		}
+		ks = append(ks, k)
+	}
+	return ks, nil
 }

@@ -1,0 +1,13 @@
+[Unit]
+Description=AWS KMS LUKS Open Device
+After=network.target
+
+[Service]
+#HOME environment variable needed to get AWS credentials
+Environment=HOME=/root
+Type=oneshot
+ExecStart=/etc/awskmsluks/bin/awskmsluks -open
+RemainAfterExit=true
+
+[Install]
+WantedBy=multi-user.target

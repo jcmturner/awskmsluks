@@ -1,0 +1,5 @@
+{
+  "CMKARN": "arn:aws:kms:<region>:<accountid>:key/<blah>",
+  "Production": false,
+  "KeyArchiveBucket": "mybucket"
+}

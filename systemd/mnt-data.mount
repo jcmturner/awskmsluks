@@ -1,0 +1,11 @@
+[Unit]
+After=awskmsluks.service
+
+[Mount]
+What=/dev/mapper/sdb_crypt
+Where=/mnt/data
+Type=ext4
+Options=defaults
+
+[Install]
+WantedBy=multi-user.target

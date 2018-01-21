@@ -1,0 +1,25 @@
+dataDisk1 = './dataDisk1.vdi'
+dataDisk2 = './dataDisk2.vdi'
+Vagrant.configure("2") do |config|
+  config.vm.provider "virtualbox" do |v|
+    v.memory = 2048
+    v.cpus = 2
+    # Adding a SATA controller that allows 2 hard drives
+    v.customize ['storagectl', :id, '--name', 'SATA Controller', '--add', 'sata', '--portcount', 2]
+    unless File.exists?(dataDisk1)
+      v.customize ['createhd', '--filename', dataDisk1, '--variant', 'Fixed', '--size', 100]
+    end
+    #if not File.exists?(dataDisk2)
+    #  v.customize ['createhd', '--filename', dataDisk2, '--variant', 'Fixed', '--size', 100]
+    #end
+    v.customize ['storageattach', :id,  '--storagectl', 'SATA Controller', '--port', 1, '--device', 0, '--type', 'hdd', '--medium', dataDisk1]
+    #v.customize ['storageattach', :id,  '--storagectl', 'SATA Controller', '--port', 2, '--device', 0, '--type', 'hdd', '--medium', dataDisk2]
+  end
+
+  config.vm.define "centos", primary: true do |centos|
+    centos.vm.hostname = "centos.awskmsluks.com"
+    centos.vm.box = "centos/7"
+    centos.vm.network "private_network", ip: "10.80.10.146", netmask: "255.255.0.0"
+    centos.vm.provision :shell, path: "bootstrap.sh"
+  end
+end
