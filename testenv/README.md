@@ -1,4 +1,5 @@
 
+* Build binary called awskmsluks in the testenv directory
 * Configure the config.json file for:
   * CMK ARN
   * Archive bucket name
