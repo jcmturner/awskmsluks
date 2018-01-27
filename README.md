@@ -17,6 +17,10 @@ Apply the policy found in iam/policy.json to the IAM user. The values of the CMK
 Create an AWS key pair for this user.
 
 ### Host
+
+#### Prerequisites
+There is a dependency on installing the ``cryptsetup`` package.
+
 #### AWS Credentials
 On the host that will have the encrypted volume configure the AWS credentials under the root user.
 This is described at (https://docs.aws.amazon.com/cli/latest/userguide/cli-config-files.html).
