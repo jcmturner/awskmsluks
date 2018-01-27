@@ -1,0 +1,32 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "Decrypt",
+      "Effect": "Allow",
+      "Action": [
+        "kms:Decrypt"
+      ],
+      "Resource": [
+        "arn:aws:kms:<region>:<accountid>:key/<blah>"
+      ]
+    },
+    {
+      "Sid": "Archive",
+      "Effect": "Allow",
+      "Action": [
+        "s3:PutObject"
+      ],
+      "Resource": [
+        "arn:aws:s3:::mybucket/",
+        "arn:aws:s3:::mybucket/*"
+      ]
+    },
+    {
+      "Sid": "GenerateKey",
+      "Effect": "Allow",
+      "Action": "kms:GenerateDataKey",
+      "Resource": "*"
+    }
+  ]
+}

@@ -1,3 +1,5 @@
 *.vdi
 .vagrant
 awskmsluks
+awskmsluks.service
+mnt-data.mount
