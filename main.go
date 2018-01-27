@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"path"
 	"strings"
+	"time"
 )
 
 const (
@@ -17,12 +18,30 @@ const (
 	cryptsetup = "/sbin/cryptsetup"
 )
 
+var buildhash = "Not set"
+var buildtime = "Not set"
+var version = "Not set"
+
+func version() (string, string, time.Time) {
+	bt, _ := time.Parse(time.RFC3339, buildtime)
+	return version, buildhash, bt
+}
+
 func main() {
 	encrypt := flag.String("encrypt", "", "Generate passphrase for LUKS and encrypt the device")
 	open := flag.Bool("open", false, "Open all encrypted devices")
 	//clse := flag.Bool("close", false, "Close all encrypted devices")
 	uuid := flag.String("uuid", "", "Return the passphrase to open the LUKS device. Value must be the UUID of the device")
+	version := flag.Bool("version", false, "Print version information")
 	flag.Parse()
+
+	// Print version information and exit.
+	if *version {
+		v, bh, bt := version()
+		fmt.Fprintf(os.Stderr, "AWS KMS LUKS Version Information:\nVersion:\t%s\nBuild hash:\t%s\nBuild time:\t%v\n", v, bh, bt)
+		os.Exit(0)
+	}
+
 	if *encrypt == "" && !*open && *uuid == "" {
 		flag.PrintDefaults()
 		os.Exit(1)
