@@ -22,7 +22,7 @@ var buildhash = "Not set"
 var buildtime = "Not set"
 var version = "Not set"
 
-func version() (string, string, time.Time) {
+func getVersion() (string, string, time.Time) {
 	bt, _ := time.Parse(time.RFC3339, buildtime)
 	return version, buildhash, bt
 }
@@ -32,12 +32,12 @@ func main() {
 	open := flag.Bool("open", false, "Open all encrypted devices")
 	//clse := flag.Bool("close", false, "Close all encrypted devices")
 	uuid := flag.String("uuid", "", "Return the passphrase to open the LUKS device. Value must be the UUID of the device")
-	version := flag.Bool("version", false, "Print version information")
+	v := flag.Bool("version", false, "Print version information")
 	flag.Parse()
 
 	// Print version information and exit.
-	if *version {
-		v, bh, bt := version()
+	if *v {
+		v, bh, bt := getVersion()
 		fmt.Fprintf(os.Stderr, "AWS KMS LUKS Version Information:\nVersion:\t%s\nBuild hash:\t%s\nBuild time:\t%v\n", v, bh, bt)
 		os.Exit(0)
 	}
